@@ -1,0 +1,221 @@
+{
+  "id": "SDZWWOBU",
+  "type": "quiz",
+  "title": "translation test (sp)",
+  "workspace": {
+    "href": "https://api.typeform.com/workspaces/WA44hg"
+  },
+  "theme": {
+    "href": "https://api.typeform.com/themes/qHWOQ7"
+  },
+  "settings": {
+    "language": "en",
+    "progress_bar": "proportion",
+    "meta": {
+      "allow_indexing": false
+    },
+    "hide_navigation": false,
+    "is_public": true,
+    "is_trial": false,
+    "show_progress_bar": true,
+    "show_typeform_branding": true,
+    "are_uploads_public": false,
+    "show_time_to_complete": true,
+    "show_number_of_submissions": false,
+    "show_cookie_consent": false,
+    "pro_subdomain_enabled": false,
+    "capabilities": {
+      "e2e_encryption": {
+        "enabled": false,
+        "modifiable": false
+      }
+    }
+  },
+  "thankyou_screens": [
+    {
+      "id": "ERPDSG1gA0ou",
+      "ref": "01G6GFD31WMMJRF4RNYYEXVNC4",
+      "title": "Gracias por su tiempo!",
+      "type": "thankyou_screen",
+      "properties": {
+        "show_button": true,
+        "share_icons": true,
+        "button_mode": "default_redirect",
+        "button_text": "Create a typeform"
+      }
+    },
+    {
+      "id": "DefaultTyScreen",
+      "ref": "default_tys",
+      "title": "Thanks for completing this typeform\nNow *create your own* — it's free, easy, & beautiful",
+      "type": "thankyou_screen",
+      "properties": {
+        "show_button": true,
+        "share_icons": false,
+        "button_mode": "default_redirect",
+        "button_text": "Create a *typeform*"
+      },
+      "attachment": {
+        "type": "image",
+        "href": "https://images.typeform.com/images/2dpnUBBkz2VN"
+      }
+    }
+  ],
+  "fields": [
+    {
+      "id": "vKprSVU7aLr6",
+      "title": "hola.",
+      "ref": "01G6GFD31WKCD1M1D9S03CZ1ZN",
+      "properties": {
+        "button_text": "Continue",
+        "hide_marks": false
+      },
+      "type": "statement",
+      "attachment": {
+        "type": "image",
+        "href": "https://images.typeform.com/images/WMALzu59xbXQ"
+      },
+      "layout": {
+        "type": "split",
+        "attachment": {
+          "type": "image",
+          "href": "https://images.typeform.com/images/WMALzu59xbXQ"
+        }
+      }
+    },
+    {
+      "id": "xwPaL5mQjrAa",
+      "title": "¿Le gusta éste?",
+      "ref": "107c5a5c-edea-4709-86de-95126f892bb9",
+      "properties": {
+        "randomize": false,
+        "allow_multiple_selection": false,
+        "allow_other_choice": false,
+        "vertical_alignment": true,
+        "choices": [
+          {
+            "id": "cxa3xOecvLsx",
+            "ref": "da7c4314-a040-4fb2-9bc1-3c92d9b74fa1",
+            "label": "sí"
+          },
+          {
+            "id": "I952icIsymP9",
+            "ref": "83166437-10a0-467e-80f3-a77496e36425",
+            "label": "no"
+          }
+        ]
+      },
+      "validations": {
+        "required": false
+      },
+      "type": "multiple_choice"
+    },
+    {
+      "id": "qQlHFxmmm8HP",
+      "title": "Lo siento",
+      "ref": "ac1400f4-91af-463c-9e82-82a4e187cfef",
+      "properties": {
+        "button_text": "Continue",
+        "hide_marks": false
+      },
+      "type": "statement"
+    },
+    {
+      "id": "PP93l2QjZroe",
+      "title": "genial!",
+      "ref": "ac464610-b951-4d57-8564-6e2c267d70ee",
+      "properties": {
+        "button_text": "Continue",
+        "hide_marks": false
+      },
+      "type": "statement"
+    }
+  ],
+  "logic": [
+    {
+      "type": "field",
+      "ref": "107c5a5c-edea-4709-86de-95126f892bb9",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "ac464610-b951-4d57-8564-6e2c267d70ee"
+            }
+          },
+          "condition": {
+            "op": "is",
+            "vars": [
+              {
+                "type": "field",
+                "value": "107c5a5c-edea-4709-86de-95126f892bb9"
+              },
+              {
+                "type": "choice",
+                "value": "da7c4314-a040-4fb2-9bc1-3c92d9b74fa1"
+              }
+            ]
+          }
+        },
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "ac1400f4-91af-463c-9e82-82a4e187cfef"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "ac1400f4-91af-463c-9e82-82a4e187cfef",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "thankyou",
+              "value": "01G6GFD31WMMJRF4RNYYEXVNC4"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "ref": "ac464610-b951-4d57-8564-6e2c267d70ee",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "thankyou",
+              "value": "01G6GFD31WMMJRF4RNYYEXVNC4"
+            }
+          },
+          "condition": {
+            "op": "always",
+            "vars": []
+          }
+        }
+      ]
+    }
+  ],
+  "created_at": "2022-06-26T17:04:21+00:00",
+  "last_updated_at": "2022-06-26T17:11:00+00:00",
+  "published_at": "2022-06-26T17:05:37+00:00",
+  "_links": {
+    "display": "https://nandanrao.typeform.com/to/SDZWWOBU"
+  }
+}

@@ -1,0 +1,20 @@
+workspace: foo
+
+name: Routine Immunization
+forms:
+  - tab: Baseline
+  - tab: Payment
+  - tab: Endline
+
+messages:
+  tab: Messages
+
+baseFile:
+  lang: English
+  path: eng.xlsx
+
+translationFiles:
+  - lang: Armenian
+    path: arm.xlsx
+  - lang: Turkish
+    path: tur.xlsx
