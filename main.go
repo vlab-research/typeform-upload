@@ -3,16 +3,16 @@ package main
 import (
 	"encoding/csv"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
+	"github.com/caarlos0/env/v6"
+	"github.com/dghubble/sling"
+	"github.com/vlab-research/trans"
 	"log"
 	"net/http"
 	"os"
 	"strings"
-
-	"github.com/caarlos0/env/v6"
-	"github.com/dghubble/sling"
-	"github.com/vlab-research/trans"
 )
 
 func handle(err error) {
@@ -183,6 +183,7 @@ type Workspace struct {
 
 type Form struct {
 	// add workspace and other things
+	ID              string            `json:"id,omitempty"`
 	Workspace       Workspace         `json:"workspace,omitempty"`
 	Title           string            `json:"title"`
 	Fields          []*trans.Field    `json:"fields"`
@@ -284,6 +285,8 @@ func (t *TypeformUploader) GetForms(workspace string) (*FormsResponse, error) {
 	return forms, nil
 }
 
+var ExistingFormError = errors.New("Form exists already.")
+
 func (t *TypeformUploader) AssertFormDoesNotExist(workspace, name string) error {
 	forms, err := t.GetForms(workspace)
 
@@ -293,7 +296,7 @@ func (t *TypeformUploader) AssertFormDoesNotExist(workspace, name string) error 
 
 	for _, f := range forms.Items {
 		if f.Title == name {
-			return fmt.Errorf("Form with name %s in workspace %s already exists", name, workspace)
+			return fmt.Errorf("Form with name %s in workspace %s already exists: %w", name, workspace, ExistingFormError)
 		}
 	}
 
@@ -362,6 +365,22 @@ func (t *TypeformUploader) CreateForm(conf *FormConf) error {
 	formId := parts[len(parts)-1]
 
 	err = UpdateMessages(api, formId, ParseMessages(conf.MessagesData))
+	return err
+}
+
+func (t *TypeformUploader) UpdateFormMessages(conf *FormConf) error {
+	api := t.Api()
+
+	parts := strings.Split(conf.Form.Workspace.Href, "/")
+	workspace := parts[len(parts)-1]
+
+	form, err := t.GetByName(workspace, conf.Form.Title)
+
+	if err != nil {
+		return err
+	}
+
+	err = UpdateMessages(api, form.ID, ParseMessages(conf.MessagesData))
 	return err
 }
 
@@ -460,37 +479,50 @@ func TranslateConf(conf *FormConf, src *Form) (*FormConf, error) {
 // make translated form in Typeform
 // with custom messages
 
-func runCreate(uploader TypeformUploader, formConfs map[string]*FormConf, sheet string) {
+func runCreate(uploader TypeformUploader, formConfs map[string]*FormConf, sheet string, messagesOnly bool) {
 	for s, c := range formConfs {
 
 		if sheet != "" && s != sheet {
 			continue
 		}
 
-		err := uploader.CreateForm(c)
-		handle(err)
+		var err error 
+
+		if messagesOnly {
+			err = uploader.UpdateFormMessages(c)
+		} else {
+			err = uploader.CreateForm(c)
+		}
+		
+		if errors.Is(err, ExistingFormError) {
+			log.Println("Skipping existing form")
+			continue
+		}
+
+		log.Println(err)
 	}
 }
 
-func runBaseCreate(uploader TypeformUploader, workspace, basePath, sheet string) {
+func runBaseCreate(uploader TypeformUploader, workspace, basePath, sheet string, messagesOnly bool) {
 	formConfs, err := uploader.BaseForms(workspace, basePath)
 	handle(err)
 
-	runCreate(uploader, formConfs, sheet)
-
+	runCreate(uploader, formConfs, sheet, messagesOnly)
 }
 
-func runTranslations(uploader TypeformUploader, workspace, basePath, translations, sheet string) {
+func runTranslations(uploader TypeformUploader, workspace, basePath, translations, sheet string, messagesOnly bool) {
 	formConfs, err := uploader.Translations(workspace, basePath, translations)
 	handle(err)
 
-	runCreate(uploader, formConfs, sheet)
+	runCreate(uploader, formConfs, sheet, messagesOnly)
 }
 
 func main() {
 	workspace := flag.String("workspace", "", "Typeform workspace id")
 	basePath := flag.String("base", "", "path to base file")
 	translationPath := flag.String("translation", "", "path to translation file")
+
+	messagesOnly := flag.Bool("messages-only", false, "if you only want to modify messages")
 
 	sheet := flag.String("sheet", "", "sheet to load individual sheet")
 
@@ -500,8 +532,8 @@ func main() {
 	uploader.LoadEnv()
 
 	if *translationPath == "" {
-		runBaseCreate(uploader, *workspace, *basePath, *sheet)
+		runBaseCreate(uploader, *workspace, *basePath, *sheet, *messagesOnly)
 	} else {
-		runTranslations(uploader, *workspace, *basePath, *translationPath, *sheet)
+		runTranslations(uploader, *workspace, *basePath, *translationPath, *sheet, *messagesOnly)
 	}
 }

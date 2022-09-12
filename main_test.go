@@ -219,3 +219,5 @@ func TestUploaderTranslations_GetsTranslationsBasedOnFilesAndExistingForm(t *tes
 	assert.Equal(t, "Si", translations["Baseline"].Form.Fields[2].Properties.Choices[0].Label)
 
 }
+
+// You added stupid messages-only, now test that...
