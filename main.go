@@ -6,6 +6,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+
 	"github.com/caarlos0/env/v6"
 	"github.com/dghubble/sling"
 	"github.com/vlab-research/trans"
@@ -189,6 +190,7 @@ type Form struct {
 	Fields          []*trans.Field    `json:"fields"`
 	ThankYouScreens []*ThankyouScreen `json:"thankyou_screens,omitempty"`
 	Logic           json.RawMessage   `json:"logic,omitempty"`
+	Hidden          []string          `json:"hidden,omitempty"`
 }
 
 type TypeformUploader struct {
@@ -216,25 +218,6 @@ func (t *TypeformUploader) Api() *sling.Sling {
 	return sli
 }
 
-func postForm(api *sling.Sling, form *Form) (error, string) {
-	apiError := new(TypeformError)
-	resp := new(CreateFormResponse)
-
-	httpResponse, err := api.New().Post("forms").BodyJSON(form).Receive(resp, &apiError)
-	if err != nil {
-		return nil, ""
-	}
-
-	if !apiError.Empty() {
-		return apiError, ""
-	}
-
-	loc := httpResponse.Header.Get("Location")
-	fmt.Println(fmt.Sprintf("Success! Created form in Typeform with %d questions", len(form.Fields)))
-
-	return nil, loc
-}
-
 func (t *TypeformUploader) GetForm(id string) (*Form, error) {
 
 	api := t.Api()
@@ -254,11 +237,14 @@ func (t *TypeformUploader) GetForm(id string) (*Form, error) {
 }
 
 type FormsResponse struct {
-	Items []struct {
+	TotalItems int `json:"total_items"`
+	Items      []struct {
 		ID    string `json:"id"`
 		Title string `json:"title"`
 	} `json:"items"`
 }
+
+// COPY HIDDEN FIELDS
 
 func (t *TypeformUploader) GetForms(workspace string) (*FormsResponse, error) {
 
@@ -269,7 +255,8 @@ func (t *TypeformUploader) GetForms(workspace string) (*FormsResponse, error) {
 
 	params := struct {
 		WorkspaceId string `url:"workspace_id"`
-	}{workspace}
+		PageSize    int    `url:"page_size"`
+	}{workspace, 100}
 
 	_, err := api.New().Path("forms").QueryStruct(params).Receive(forms, apiError)
 
@@ -280,6 +267,10 @@ func (t *TypeformUploader) GetForms(workspace string) (*FormsResponse, error) {
 	if !apiError.Empty() {
 		fmt.Println(fmt.Sprintf("Cannot get forms from workspace %s", workspace))
 		return nil, apiError
+	}
+
+	if forms.TotalItems > len(forms.Items) {
+		return nil, fmt.Errorf("Oops, cannot get all forms. Page size is %d and the total items is %d", len(forms.Items), forms.TotalItems)
 	}
 
 	return forms, nil
@@ -343,36 +334,85 @@ func UpdateMessages(api *sling.Sling, id string, messages Messages) error {
 	return nil
 }
 
+func getWorkspace(href string) string {
+	parts := strings.Split(href, "/")
+	workspace := parts[len(parts)-1]
+	return workspace
+}
+
+func sendForm(api *sling.Sling, form *Form, method string) (error, string) {
+	apiError := new(TypeformError)
+	resp := new(CreateFormResponse)
+
+	var httpResponse *http.Response
+	var err error
+
+	switch method {
+	case "POST":
+		httpResponse, err = api.New().Post("forms").BodyJSON(form).Receive(resp, &apiError)
+
+	case "PUT":
+		path := fmt.Sprintf("forms/%s", form.ID)
+		httpResponse, err = api.New().Put(path).BodyJSON(form).Receive(resp, &apiError)
+	}
+
+	if err != nil {
+		return nil, ""
+	}
+
+	if !apiError.Empty() {
+		return apiError, ""
+	}
+
+	loc := httpResponse.Header.Get("Location")
+	fmt.Println(fmt.Sprintf("Success! Created form in Typeform with %d questions", len(form.Fields)))
+
+	return nil, loc
+}
+
 func (t *TypeformUploader) CreateForm(conf *FormConf) error {
 	api := t.Api()
 
-	// get workspace from url version
-	parts := strings.Split(conf.Form.Workspace.Href, "/")
-	workspace := parts[len(parts)-1]
+	workspace := getWorkspace(conf.Form.Workspace.Href)
 
 	err := t.AssertFormDoesNotExist(workspace, conf.Name)
 	if err != nil {
 		return err
 	}
 
-	err, loc := postForm(api, conf.Form)
+	err, loc := sendForm(api, conf.Form, "POST")
 	if err != nil {
 		return err
 	}
 
 	// get FormId of newly created form
-	parts = strings.Split(loc, "/")
+	parts := strings.Split(loc, "/")
 	formId := parts[len(parts)-1]
 
 	err = UpdateMessages(api, formId, ParseMessages(conf.MessagesData))
 	return err
 }
 
+func (t *TypeformUploader) UpdateForm(conf *FormConf) error {
+	api := t.Api()
+
+	workspace := getWorkspace(conf.Form.Workspace.Href)
+
+	form, err := t.GetByName(workspace, conf.Form.Title)
+
+	if err != nil {
+		return err
+	}
+
+	conf.Form.ID = form.ID
+	err, _ = sendForm(api, conf.Form, "PUT")
+	return err
+}
+
 func (t *TypeformUploader) UpdateFormMessages(conf *FormConf) error {
 	api := t.Api()
 
-	parts := strings.Split(conf.Form.Workspace.Href, "/")
-	workspace := parts[len(parts)-1]
+	workspace := getWorkspace(conf.Form.Workspace.Href)
 
 	form, err := t.GetByName(workspace, conf.Form.Title)
 
@@ -386,6 +426,7 @@ func (t *TypeformUploader) UpdateFormMessages(conf *FormConf) error {
 
 func (t *TypeformUploader) GetByName(workspace, name string) (*Form, error) {
 	forms, err := t.GetForms(workspace)
+
 	if err != nil {
 		return nil, err
 	}
@@ -479,21 +520,26 @@ func TranslateConf(conf *FormConf, src *Form) (*FormConf, error) {
 // make translated form in Typeform
 // with custom messages
 
-func runCreate(uploader TypeformUploader, formConfs map[string]*FormConf, sheet string, messagesOnly bool) {
+func runCreate(uploader TypeformUploader, formConfs map[string]*FormConf, sheet string, update bool) {
 	for s, c := range formConfs {
 
 		if sheet != "" && s != sheet {
 			continue
 		}
 
-		var err error 
+		var err error
 
-		if messagesOnly {
-			err = uploader.UpdateFormMessages(c)
+		// yech.
+		if update {
+			err = uploader.UpdateForm(c)
+
+			if err == nil {
+				err = uploader.UpdateFormMessages(c)
+			}
 		} else {
 			err = uploader.CreateForm(c)
 		}
-		
+
 		if errors.Is(err, ExistingFormError) {
 			log.Println("Skipping existing form")
 			continue
@@ -503,18 +549,18 @@ func runCreate(uploader TypeformUploader, formConfs map[string]*FormConf, sheet 
 	}
 }
 
-func runBaseCreate(uploader TypeformUploader, workspace, basePath, sheet string, messagesOnly bool) {
+func runBaseCreate(uploader TypeformUploader, workspace, basePath, sheet string, update bool) {
 	formConfs, err := uploader.BaseForms(workspace, basePath)
 	handle(err)
 
-	runCreate(uploader, formConfs, sheet, messagesOnly)
+	runCreate(uploader, formConfs, sheet, update)
 }
 
-func runTranslations(uploader TypeformUploader, workspace, basePath, translations, sheet string, messagesOnly bool) {
+func runTranslations(uploader TypeformUploader, workspace, basePath, translations, sheet string, update bool) {
 	formConfs, err := uploader.Translations(workspace, basePath, translations)
 	handle(err)
 
-	runCreate(uploader, formConfs, sheet, messagesOnly)
+	runCreate(uploader, formConfs, sheet, update)
 }
 
 func main() {
@@ -522,7 +568,7 @@ func main() {
 	basePath := flag.String("base", "", "path to base file")
 	translationPath := flag.String("translation", "", "path to translation file")
 
-	messagesOnly := flag.Bool("messages-only", false, "if you only want to modify messages")
+	update := flag.Bool("update", false, "if you want to update. Not create. Just update.")
 
 	sheet := flag.String("sheet", "", "sheet to load individual sheet")
 
@@ -532,8 +578,8 @@ func main() {
 	uploader.LoadEnv()
 
 	if *translationPath == "" {
-		runBaseCreate(uploader, *workspace, *basePath, *sheet, *messagesOnly)
+		runBaseCreate(uploader, *workspace, *basePath, *sheet, *update)
 	} else {
-		runTranslations(uploader, *workspace, *basePath, *translationPath, *sheet, *messagesOnly)
+		runTranslations(uploader, *workspace, *basePath, *translationPath, *sheet, *update)
 	}
 }

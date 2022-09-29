@@ -16,8 +16,9 @@ func findField(ref string, form *Form) (*trans.Field, error) {
 }
 
 func TranslateForm(src *Form, translated *Form) (*Form, error) {
-	// Copy over logic
+	// Copy over logic and hidden fields from source
 	translated.Logic = src.Logic
+	translated.Hidden = src.Hidden
 
 	// Copy of the choice Refs form the source (not specified)
 	for _, f := range translated.Fields {
@@ -25,6 +26,12 @@ func TranslateForm(src *Form, translated *Form) (*Form, error) {
 
 		if err != nil {
 			return nil, err
+		}
+
+		if len(f.Properties.Choices) != len(tf.Properties.Choices) {
+			fmt.Println(f.Properties.Choices)
+
+			return nil, fmt.Errorf("Number of choices not the same for field ref: %v. There are %d choices in the target and %d choices in the source", f.Ref, len(f.Properties.Choices), len(tf.Properties.Choices))
 		}
 
 		for j := range f.Properties.Choices {
