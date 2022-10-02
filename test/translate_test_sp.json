@@ -95,12 +95,10 @@
         "choices": [
           {
             "id": "cxa3xOecvLsx",
-            "ref": "da7c4314-a040-4fb2-9bc1-3c92d9b74fa1",
             "label": "sí"
           },
           {
             "id": "I952icIsymP9",
-            "ref": "83166437-10a0-467e-80f3-a77496e36425",
             "label": "no"
           }
         ]

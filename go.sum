@@ -26,6 +26,8 @@ github.com/vlab-research/trans v0.0.8 h1:897LEi/sex1wRNhG2G8DKmzmLNuKB5torJNTiR7
 github.com/vlab-research/trans v0.0.8/go.mod h1:760R69NitmG7XcxEOF0OuuQjxvZiLGqG5sL493lmfjw=
 github.com/vlab-research/trans v0.0.10 h1:FdFz+mwrxuceJo/cjCbZ4vqAuJwgxrAjKpFvFfCxaMY=
 github.com/vlab-research/trans v0.0.10/go.mod h1:760R69NitmG7XcxEOF0OuuQjxvZiLGqG5sL493lmfjw=
+github.com/vlab-research/trans v0.0.11 h1:RVAcFpsUjm7hikNrw0/+/g8Ww2643WhuAadvQAt41ww=
+github.com/vlab-research/trans v0.0.11/go.mod h1:760R69NitmG7XcxEOF0OuuQjxvZiLGqG5sL493lmfjw=
 github.com/xuri/efp v0.0.0-20220407160117-ad0f7a785be8 h1:3X7aE0iLKJ5j+tz58BpvIZkXNV7Yq4jC93Z/rbN2Fxk=
 github.com/xuri/efp v0.0.0-20220407160117-ad0f7a785be8/go.mod h1:ybY/Jr0T0GTCnYjKqmdwxyxn2BQf2RcQIIvex5QldPI=
 github.com/xuri/excelize/v2 v2.6.0 h1:m/aXAzSAqxgt74Nfd+sNzpzVKhTGl7+S9nbG4A57mF4=

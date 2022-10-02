@@ -49,11 +49,11 @@ func ExtractParagraphs(text string) []string {
 	return strings.Split(strings.TrimSpace(text), "\n")
 }
 
-func extractChoices(options string) []trans.FieldChoice {
+func extractChoices(options string) []*trans.FieldChoice {
 	s := ExtractParagraphs(options)
-	choices := make([]trans.FieldChoice, len(s))
+	choices := make([]*trans.FieldChoice, len(s))
 	for i, ss := range s {
-		choices[i] = trans.FieldChoice{
+		choices[i] = &trans.FieldChoice{
 			ID:    "",
 			Label: ss,
 			Ref:   "",
@@ -75,7 +75,7 @@ func BuildField(row []string) (interface{}, error) {
 		return nil, fmt.Errorf("This row has empty columns and will be skipped: %s", row)
 	}
 
-	choices := []trans.FieldChoice{}
+	choices := []*trans.FieldChoice{}
 	var title string
 
 	options := get(row, 3)
@@ -100,7 +100,7 @@ func BuildField(row []string) (interface{}, error) {
 			title = fmt.Sprintf("%s\n\n%s", strings.TrimSpace(q), strings.TrimSpace(options))
 			for _, answer := range answers {
 				label := answer.Response
-				choices = append(choices, trans.FieldChoice{Label: label})
+				choices = append(choices, &trans.FieldChoice{Label: label})
 			}
 		}
 	}
@@ -117,7 +117,7 @@ func BuildField(row []string) (interface{}, error) {
 		Type:  questionType,
 		Title: title,
 		Ref:   ref,
-		Properties: trans.FieldProperties{
+		Properties: &trans.FieldProperties{
 			Choices:     choices,
 			Description: description,
 		},
@@ -393,7 +393,7 @@ func (t *TypeformUploader) CreateForm(conf *FormConf) error {
 	return err
 }
 
-func (t *TypeformUploader) UpdateForm(conf *FormConf) error {
+func (t *TypeformUploader) UpdateForm(conf *FormConf, keepLogic bool) error {
 	api := t.Api()
 
 	workspace := getWorkspace(conf.Form.Workspace.Href)
@@ -404,7 +404,17 @@ func (t *TypeformUploader) UpdateForm(conf *FormConf) error {
 		return err
 	}
 
+	// Set the ID and hidden fields
 	conf.Form.ID = form.ID
+
+	if keepLogic {
+		conf.Form.Hidden = form.Hidden
+		conf.Form.Logic = form.Logic
+
+		// Add any refs available in the source
+		conf.Form.Fields, _ = CopyChoiceRefs(form, conf.Form, true)
+	}
+
 	err, _ = sendForm(api, conf.Form, "PUT")
 	return err
 }
@@ -520,7 +530,7 @@ func TranslateConf(conf *FormConf, src *Form) (*FormConf, error) {
 // make translated form in Typeform
 // with custom messages
 
-func runCreate(uploader TypeformUploader, formConfs map[string]*FormConf, sheet string, update bool) {
+func runCreate(uploader TypeformUploader, formConfs map[string]*FormConf, sheet string, update bool, keepLogic bool) {
 	for s, c := range formConfs {
 
 		if sheet != "" && s != sheet {
@@ -531,7 +541,7 @@ func runCreate(uploader TypeformUploader, formConfs map[string]*FormConf, sheet 
 
 		// yech.
 		if update {
-			err = uploader.UpdateForm(c)
+			err = uploader.UpdateForm(c, keepLogic)
 
 			if err == nil {
 				err = uploader.UpdateFormMessages(c)
@@ -553,14 +563,18 @@ func runBaseCreate(uploader TypeformUploader, workspace, basePath, sheet string,
 	formConfs, err := uploader.BaseForms(workspace, basePath)
 	handle(err)
 
-	runCreate(uploader, formConfs, sheet, update)
+	runCreate(uploader, formConfs, sheet, update, true)
 }
 
 func runTranslations(uploader TypeformUploader, workspace, basePath, translations, sheet string, update bool) {
 	formConfs, err := uploader.Translations(workspace, basePath, translations)
 	handle(err)
 
-	runCreate(uploader, formConfs, sheet, update)
+	runCreate(uploader, formConfs, sheet, update, false)
+}
+
+func runDirect(uploader TypeformUploader, workspace, basePath string) {
+
 }
 
 func main() {
@@ -572,10 +586,17 @@ func main() {
 
 	sheet := flag.String("sheet", "", "sheet to load individual sheet")
 
+	direct := flag.Bool("direct", false, "to run direct from a file")
+
 	flag.Parse()
 
 	uploader := TypeformUploader{}
 	uploader.LoadEnv()
+
+	if *direct {
+		runDirect(uploader, *workspace, *basePath)
+		return
+	}
 
 	if *translationPath == "" {
 		runBaseCreate(uploader, *workspace, *basePath, *sheet, *update)

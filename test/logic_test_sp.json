@@ -1,0 +1,202 @@
+{
+  "id": "g9fDGoUE",
+  "type": "quiz",
+  "title": "upload logic translation - B",
+  "workspace": {
+    "href": "https://api.typeform.com/workspaces/WA44hg"
+  },
+  "theme": {
+    "href": "https://api.typeform.com/themes/qHWOQ7"
+  },
+  "settings": {
+    "language": "en",
+    "progress_bar": "proportion",
+    "meta": {
+      "allow_indexing": false
+    },
+    "hide_navigation": false,
+    "is_public": true,
+    "is_trial": false,
+    "show_progress_bar": true,
+    "show_typeform_branding": true,
+    "are_uploads_public": false,
+    "show_time_to_complete": true,
+    "show_number_of_submissions": false,
+    "show_cookie_consent": false,
+    "show_question_number": true,
+    "pro_subdomain_enabled": false,
+    "capabilities": {
+      "e2e_encryption": {
+        "enabled": false,
+        "modifiable": false
+      }
+    }
+  },
+  "thankyou_screens": [
+    {
+      "id": "fKTFUa9lI7HB",
+      "ref": "01GE5XP2K95VXZ9VNZK3487T71",
+      "title": "",
+      "type": "thankyou_screen",
+      "properties": {
+        "show_button": true,
+        "share_icons": true,
+        "button_mode": "default_redirect",
+        "button_text": "Create a typeform"
+      }
+    },
+    {
+      "id": "DefaultTyScreen",
+      "ref": "default_tys",
+      "title": "Thanks for completing this typeform\nNow *create your own* — it's free, easy, & beautiful",
+      "type": "thankyou_screen",
+      "properties": {
+        "show_button": true,
+        "share_icons": false,
+        "button_mode": "default_redirect",
+        "button_text": "Create a *typeform*"
+      },
+      "attachment": {
+        "type": "image",
+        "href": "https://images.typeform.com/images/2dpnUBBkz2VN"
+      }
+    }
+  ],
+  "fields": [
+    {
+      "id": "XlnDDjPHP9ar",
+      "title": "Hola, Elige un camino: ",
+      "ref": "pick_road",
+      "properties": {
+        "randomize": false,
+        "allow_multiple_selection": false,
+        "allow_other_choice": false,
+        "vertical_alignment": true,
+        "choices": [
+          {
+            "id": "w81hbCjC9Yse",
+            "ref": "01GE5XP2K9KPV5P4XD7J9H4N3K",
+            "label": "Este"
+          },
+          {
+            "id": "I4F6t5bAfZvF",
+            "ref": "01GE5XP2K9YHBDKXWDMG9N7BPD",
+            "label": "Oeste"
+          }
+        ]
+      },
+      "validations": {
+        "required": false
+      },
+      "type": "multiple_choice",
+      "attachment": {
+        "type": "image",
+        "href": "https://images.typeform.com/images/WMALzu59xbXQ"
+      },
+      "layout": {
+        "type": "split",
+        "attachment": {
+          "type": "image",
+          "href": "https://images.typeform.com/images/WMALzu59xbXQ"
+        }
+      }
+    },
+    {
+      "id": "mJOoeFb5q38j",
+      "title": "Bienvenido al este",
+      "ref": "east_road",
+      "properties": {
+        "button_text": "Continue",
+        "hide_marks": false
+      },
+      "type": "statement"
+    },
+    {
+      "id": "ND9PTjicpjGY",
+      "title": "Bienvenido al oeste",
+      "ref": "west_road",
+      "properties": {
+        "button_text": "Continue",
+        "hide_marks": false
+      },
+      "type": "statement"
+    },
+    {
+      "id": "BjTn8Xnu94RY",
+      "title": "Ahora, tu movil: ",
+      "ref": "phone",
+      "properties": {
+        "default_country_code": "US"
+      },
+      "validations": {
+        "required": false
+      },
+      "type": "phone_number"
+    },
+    {
+      "id": "fKTFUa9lI7HB",
+      "ref": "01GE5XP2K95VXZ9VNZK3487T71",
+      "title": "",
+      "type": "thankyou_screen",
+      "properties": {
+        "show_button": true,
+        "share_icons": true,
+        "button_mode": "default_redirect",
+        "button_text": "Create a typeform"
+      }
+    },
+    {
+      "id": "DefaultTyScreen",
+      "ref": "default_tys",
+      "title": "Thanks for completing this typeform\nNow *create your own* — it's free, easy, & beautiful",
+      "type": "thankyou_screen",
+      "properties": {
+        "show_button": true,
+        "share_icons": false,
+        "button_mode": "default_redirect",
+        "button_text": "Create a *typeform*"
+      },
+      "attachment": {
+        "type": "image",
+        "href": "https://images.typeform.com/images/2dpnUBBkz2VN"
+      }
+    }
+  ],
+  "logic": [
+    {
+      "type": "field",
+      "ref": "pick_road",
+      "actions": [
+        {
+          "action": "jump",
+          "details": {
+            "to": {
+              "type": "field",
+              "value": "west_road"
+            }
+          },
+          "condition": {
+            "op": "is",
+            "vars": [
+              {
+                "type": "field",
+                "value": "pick_road"
+              },
+              {
+                "type": "choice",
+                "value": "01GE5XP2K9YHBDKXWDMG9N7BPD"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "created_at": "2022-09-30T00:48:26+00:00",
+  "last_updated_at": "2022-09-30T00:50:15+00:00",
+  "published_at": "2022-09-30T00:49:23+00:00",
+  "_links": {
+    "display": "https://survey.typeform.com/to/g9fDGoUE"
+  },
+  "custom_messages": {}
+}

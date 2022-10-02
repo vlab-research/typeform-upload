@@ -42,6 +42,51 @@ func TestTranslateForm_WithMultipleChoice(t *testing.T) {
 	assert.Equal(t, "D", res.Fields[0].Properties.Choices[1].Label)
 }
 
+func TestTranslateForm_IgnoresExtraFieldsInTranslation(t *testing.T) {
+	j := `{"workspace":{"href":"https://api.typeform.com/workspaces/workspace"},"title":"form name","fields":[{"type":"multiple_choice","title":"hello\n\n- A. Foo\n- B. Bar","ref":"var1","properties":{"choices":[{"label":"A"},{"label":"B"}]}}]}`
+
+	jt := `{"workspace":{"href":"https://api.typeform.com/workspaces/workspace"},"title":"form name","fields":[{"type":"multiple_choice","title":"hola\n\n- C. Foosp\n- D. Barsp","ref":"var1","properties":{"choices":[{"label":"C"},{"label":"D"}]}}, {"type":"multiple_choice","title":"Ciao\n\n- C. Fooit\n- D. Barit","ref":"var2","properties":{"choices":[{"label":"C"},{"label":"D"}]}}]}`
+
+	f := mockForm(j)
+	ft := mockForm(jt)
+
+	_, err := TranslateForm(f, ft)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, f)
+}
+
+func TestTranslateForm_RaisesIfTranslationMissesFields(t *testing.T) {
+	jt := `{"workspace":{"href":"https://api.typeform.com/workspaces/workspace"},"title":"form name","fields":[{"type":"multiple_choice","title":"hello\n\n- A. Foo\n- B. Bar","ref":"var1","properties":{"choices":[{"label":"A"},{"label":"B"}]}}]}`
+
+	j := `{"workspace":{"href":"https://api.typeform.com/workspaces/workspace"},"title":"form name","fields":[{"type":"multiple_choice","title":"hola\n\n- C. Foosp\n- D. Barsp","ref":"var1","properties":{"choices":[{"label":"C"},{"label":"D"}]}}, {"type":"multiple_choice","title":"Ciao\n\n- C. Fooit\n- D. Barit","ref":"var2","properties":{"choices":[{"label":"C"},{"label":"D"}]}}]}`
+
+	f := mockForm(j)
+	ft := mockForm(jt)
+
+	_, err := TranslateForm(f, ft)
+
+	assert.NotNil(t, err)
+	assert.Contains(t, err.Error(), "Could not find field ref var2")
+}
+
+func TestCopyChoiceRefs_IgnoresMissingFieldsIfSkipErrorsTrue(t *testing.T) {
+	jt := `{"workspace":{"href":"https://api.typeform.com/workspaces/workspace"},"title":"form name","fields":[{"type":"multiple_choice","title":"hello\n\n- A. Foo\n- B. Bar","ref":"var1","properties":{"choices":[{"label":"A"},{"label":"B"}]}}]}`
+
+	j := `{"workspace":{"href":"https://api.typeform.com/workspaces/workspace"},"title":"form name","fields":[{"type":"multiple_choice","title":"hola\n\n- C. Foosp\n- D. Barsp","ref":"var1","properties":{"choices":[{"label":"C"},{"label":"D"}]}}, {"type":"multiple_choice","title":"Ciao\n\n- C. Fooit\n- D. Barit","ref":"var2","properties":{"choices":[{"label":"C"},{"label":"D"}]}}]}`
+
+	f := mockForm(j)
+	ft := mockForm(jt)
+
+	res, err := CopyChoiceRefs(f, ft, true)
+
+	assert.Nil(t, err)
+
+	// maintains original second field, as no translation exists
+	assert.NotEqual(t, res[0], f.Fields[0])
+	assert.Equal(t, res[1], f.Fields[1])
+}
+
 func TestTranslateForm_WithPerfectOrder(t *testing.T) {
 	f := readFile("translate_test_en.json")  // will be mutated
 	f2 := readFile("translate_test_en.json") // original
@@ -64,7 +109,6 @@ func TestTranslateForm_WithPerfectOrder(t *testing.T) {
 		if len(field.Properties.Choices) != 0 {
 			for j, choice := range field.Properties.Choices {
 				resChoice := resField.Properties.Choices[j]
-
 				assert.Equal(t, choice.Ref, resChoice.Ref)
 			}
 		}

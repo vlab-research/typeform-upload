@@ -1,0 +1,243 @@
+{
+  "id": "iwff98oL",
+  "type": "quiz",
+  "title": "Survey Translation Example - Baseline",
+  "workspace": {
+    "href": "https://api.typeform.com/workspaces/WA44hg"
+  },
+  "theme": {
+    "href": "https://api.typeform.com/themes/qHWOQ7"
+  },
+  "settings": {
+    "language": "en",
+    "progress_bar": "proportion",
+    "meta": {
+      "allow_indexing": false
+    },
+    "hide_navigation": false,
+    "is_public": true,
+    "is_trial": false,
+    "show_progress_bar": true,
+    "show_typeform_branding": true,
+    "are_uploads_public": false,
+    "show_time_to_complete": true,
+    "show_number_of_submissions": false,
+    "show_cookie_consent": false,
+    "show_question_number": true,
+    "pro_subdomain_enabled": false,
+    "capabilities": {
+      "e2e_encryption": {
+        "enabled": false,
+        "modifiable": false
+      }
+    }
+  },
+  "thankyou_screens": [
+    {
+      "id": "mTzCDNCRKbSr",
+      "ref": "thankyou_optout",
+      "title": "Ok, no problem. Thank you for your time!",
+      "type": "thankyou_screen",
+      "properties": {
+        "show_button": true,
+        "share_icons": true,
+        "button_mode": "default_redirect",
+        "button_text": "again"
+      }
+    },
+    {
+      "id": "DefaultTyScreen",
+      "ref": "default_tys",
+      "title": "Thanks for completing this typeform\nNow *create your own* — it's free, easy, & beautiful",
+      "type": "thankyou_screen",
+      "properties": {
+        "show_button": true,
+        "share_icons": false,
+        "button_mode": "default_redirect",
+        "button_text": "Create a *typeform*"
+      },
+      "attachment": {
+        "type": "image",
+        "href": "https://images.typeform.com/images/2dpnUBBkz2VN"
+      }
+    }
+  ],
+  "fields": [
+    {
+      "id": "Z5gxpi65ewAK",
+      "title": "Hello! We would like to take your time!",
+      "ref": "intro_1",
+      "properties": {
+        "randomize": false,
+        "allow_multiple_selection": false,
+        "allow_other_choice": false,
+        "vertical_alignment": true,
+        "choices": [
+          {
+            "id": "gA05jZc88tDf",
+            "ref": "01GE5YPAMPKJ81Q8K0KR36AY75",
+            "label": "OK"
+          }
+        ]
+      },
+      "validations": {
+        "required": false
+      },
+      "type": "multiple_choice"
+    },
+    {
+      "id": "MxxMVb5HM4ol",
+      "title": "You can always stop.",
+      "ref": "intro_2",
+      "properties": {
+        "button_text": "Continue",
+        "hide_marks": false
+      },
+      "type": "statement"
+    },
+    {
+      "id": "5vzscAwChBuD",
+      "title": "Do you accept to participate in the survey?",
+      "ref": "intro_3",
+      "properties": {
+        "randomize": false,
+        "allow_multiple_selection": false,
+        "allow_other_choice": false,
+        "vertical_alignment": true,
+        "choices": [
+          {
+            "id": "xLuZnh6b2Yn7",
+            "ref": "01GE5YPAMP05YTG71GNG727EMA",
+            "label": "Yes"
+          },
+          {
+            "id": "4KSrEVXGwxIT",
+            "ref": "01GE5YPAMPP1ARVR372Z2489D4",
+            "label": "No"
+          }
+        ]
+      },
+      "validations": {
+        "required": false
+      },
+      "type": "multiple_choice"
+    },
+    {
+      "id": "Ra9EomXgG1yB",
+      "title": "Overall, I think vaccines are safe\n\n- A. Strongly agree\n- B. Tend to agree\n- C. Neither agree nor disagree\n- D. Tend to disagree\n- E. Strongly disagree",
+      "ref": "vaccines_safe",
+      "properties": {
+        "randomize": false,
+        "allow_multiple_selection": false,
+        "allow_other_choice": false,
+        "vertical_alignment": true,
+        "choices": [
+          {
+            "id": "QP02Fnfm5PUL",
+            "ref": "01GE5YPAMPKY8ZQPHR4R1A1GZV",
+            "label": "A"
+          },
+          {
+            "id": "eGaufCtxOB63",
+            "ref": "01GE5YPAMP64GCDN361GR5A5Q7",
+            "label": "B"
+          },
+          {
+            "id": "AgmWdDnCQ2xR",
+            "ref": "01GE5YPAMPAZDZ4YM3HMBNFYYH",
+            "label": "C"
+          },
+          {
+            "id": "PcSPcMOAD60g",
+            "ref": "01GE5YPAMPQTPAVHB66AS8W1VN",
+            "label": "D"
+          },
+          {
+            "id": "dTXm3XJkp3KR",
+            "ref": "01GE5YPAMPSQ2PJ9DW1WMAPPQJ",
+            "label": "E"
+          }
+        ]
+      },
+      "validations": {
+        "required": false
+      },
+      "type": "multiple_choice"
+    },
+    {
+      "id": "AAypriQaQW0q",
+      "title": "Great, thanks! ",
+      "ref": "thankyou_1",
+      "properties": {
+        "description": "{\"type\": \"wait\"}",
+        "button_text": "Continue",
+        "hide_marks": false
+      },
+      "type": "statement"
+    },
+    {
+      "id": "68g4svQmdG4y",
+      "title": "Hello again! Would you like to continue taking this survey? It will take 15 minutes of your time to complete and you will recieve X in mobile credit sent to phone number you provide if you complete all the questions. Click \"Start\" to take the survey.",
+      "ref": "hello_again",
+      "properties": {
+        "description": "{\"type\": \"stitch\", \"form\": \"foo\"}",
+        "randomize": false,
+        "allow_multiple_selection": false,
+        "allow_other_choice": false,
+        "vertical_alignment": true,
+        "choices": [
+          {
+            "id": "KGDMb0xfmNIX",
+            "ref": "01GE5YPAMPFDKV9X3HADWK9FXM",
+            "label": "Start"
+          }
+        ]
+      },
+      "validations": {
+        "required": false
+      },
+      "type": "multiple_choice"
+    },
+    {
+      "id": "mTzCDNCRKbSr",
+      "ref": "thankyou_optout",
+      "title": "Ok, no problem. Thank you for your time!",
+      "type": "thankyou_screen",
+      "properties": {
+        "show_button": true,
+        "share_icons": true,
+        "button_mode": "default_redirect",
+        "button_text": "again"
+      }
+    },
+    {
+      "id": "DefaultTyScreen",
+      "ref": "default_tys",
+      "title": "Thanks for completing this typeform\nNow *create your own* — it's free, easy, & beautiful",
+      "type": "thankyou_screen",
+      "properties": {
+        "show_button": true,
+        "share_icons": false,
+        "button_mode": "default_redirect",
+        "button_text": "Create a *typeform*"
+      },
+      "attachment": {
+        "type": "image",
+        "href": "https://images.typeform.com/images/2dpnUBBkz2VN"
+      }
+    }
+  ],
+  "created_at": "2022-09-30T00:55:30+00:00",
+  "last_updated_at": "2022-09-30T01:05:05+00:00",
+  "published_at": "2022-09-30T00:55:30+00:00",
+  "_links": {
+    "display": "https://survey.typeform.com/to/iwff98oL"
+  },
+  "custom_messages": {
+    "label.buttonHint.default": "Hi! Do you want to keep taking the survey? If so, please try and answer the question. If you would like to stop the survey, just ignore this message and we won’t write you any more.",
+    "label.error.emailAddress": "Hi! If you saw an Ad for a survey, please go back and click on the Ad to participate.",
+    "label.error.mustSelect": "Sorry, I only understand answers to the questions I ask. Please use the buttons provided to answer the question. If you are having trouble completing the survey, please email help@vlab.digital.",
+    "label.error.phoneNumber": "I’m sorry, that does not look like a valid mobile number. Please try again.",
+    "label.error.range": "I'm sorry, please enter a number and only a number."
+  }
+}

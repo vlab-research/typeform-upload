@@ -51,23 +51,23 @@ func TestBuildField_GetsTitleFromMultipleChoiceQuestion(t *testing.T) {
 func TestBuildField_GetsChoicesFromMultipleChoiceQuestionWithLabels(t *testing.T) {
 	i, _ := BuildField([]string{"ref", "multiple_choice", "foo", "A. yes\nB. no", ""})
 	f := i.(*trans.Field)
-	assert.Equal(t, f.Properties.Choices, []trans.FieldChoice{{"", "A", ""}, {"", "B", ""}})
+	assert.Equal(t, f.Properties.Choices, []*trans.FieldChoice{{"", "A", ""}, {"", "B", ""}})
 }
 
 func TestBuildField_GetsChoicesFromMultipleChoiceQuestionWithoutLabels(t *testing.T) {
 	i, _ := BuildField([]string{"ref", "multiple_choice", "foo", "yes\nno", ""})
 	f := i.(*trans.Field)
-	assert.Equal(t, f.Properties.Choices, []trans.FieldChoice{{"", "yes", ""}, {"", "no", ""}})
+	assert.Equal(t, f.Properties.Choices, []*trans.FieldChoice{{"", "yes", ""}, {"", "no", ""}})
 
 	i, _ = BuildField([]string{"ref", "multiple_choice", "foo", "\nyes\nno", ""})
 	f = i.(*trans.Field)
-	assert.Equal(t, f.Properties.Choices, []trans.FieldChoice{{"", "yes", ""}, {"", "no", ""}})
+	assert.Equal(t, f.Properties.Choices, []*trans.FieldChoice{{"", "yes", ""}, {"", "no", ""}})
 }
 
 func TestBuildField_GetsChoicesFromMultipleChoiceQuestionSkippingLetters(t *testing.T) {
 	i, _ := BuildField([]string{"ref", "multiple_choice", "foo", "A. yes\nC. no", ""})
 	f := i.(*trans.Field)
-	assert.Equal(t, f.Properties.Choices, []trans.FieldChoice{{"", "A", ""}, {"", "C", ""}})
+	assert.Equal(t, f.Properties.Choices, []*trans.FieldChoice{{"", "A", ""}, {"", "C", ""}})
 }
 
 func TestBuildForm_IgnoresBlankLines(t *testing.T) {
