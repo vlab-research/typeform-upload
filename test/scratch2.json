@@ -1,0 +1,86 @@
+{
+  "workspace": {
+    "href": "https://api.typeform.com/workspaces/WA44hg"
+  },
+  "title": "Survey Translation Example - Baseline",
+  "fields": [
+    {
+      "type": "multiple_choice",
+      "title": "Hello! We would like to take your time!",
+      "ref": "intro_1",
+      "properties": {
+        "choices": [
+          {
+            "label": "OK"
+          }
+        ]
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "title": "Do you accept to participate in the survey?",
+      "ref": "intro_3",
+      "properties": {
+        "choices": [
+          {
+            "label": "Yes"
+          },
+          {
+            "label": "No"
+          }
+        ]
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "title": "Overall, I think vaccines are safe\n\n- A. Strongly agree\n- B. Tend to agree\n- C. Neither agree nor disagree\n- D. Tend to disagree\n- E. Strongly disagree",
+      "ref": "vaccines_safe",
+      "properties": {
+        "choices": [
+          {
+            "label": "A"
+          },
+          {
+            "label": "B"
+          },
+          {
+            "label": "C"
+          },
+          {
+            "label": "D"
+          },
+          {
+            "label": "E"
+          }
+        ]
+      }
+    },
+    {
+      "type": "statement",
+      "title": "Great, thanks! ",
+      "ref": "thankyou_1",
+      "properties": {
+        "description": "{\"type\": \"wait\"}"
+      }
+    },
+    {
+      "type": "multiple_choice",
+      "title": "Hello again! Would you like to continue taking this survey? It will take 15 minutes of your time to complete and you will recieve X in mobile credit sent to phone number you provide if you complete all the questions. Click \"Start\" to take the survey.",
+      "ref": "hello_again",
+      "properties": {
+        "choices": [
+          {
+            "label": "Start"
+          }
+        ],
+        "description": "{\"type\": \"stitch\", \"form\": \"foo\"}"
+      }
+    }
+  ],
+  "thankyou_screens": [
+    {
+      "ref": "thankyou_optout",
+      "title": "Ok, no problem. Thank you for your time!"
+    }
+  ]
+}

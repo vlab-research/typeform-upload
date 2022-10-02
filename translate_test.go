@@ -71,20 +71,22 @@ func TestTranslateForm_RaisesIfTranslationMissesFields(t *testing.T) {
 }
 
 func TestCopyChoiceRefs_IgnoresMissingFieldsIfSkipErrorsTrue(t *testing.T) {
-	jt := `{"workspace":{"href":"https://api.typeform.com/workspaces/workspace"},"title":"form name","fields":[{"type":"multiple_choice","title":"hello\n\n- A. Foo\n- B. Bar","ref":"var1","properties":{"choices":[{"label":"A"},{"label":"B"}]}}]}`
+	jt := `{"workspace":{"href":"https://api.typeform.com/workspaces/workspace"},"title":"form name","fields":[{"type":"multiple_choice","title":"hello\n\n- A. Foo\n- B. Bar","ref":"var1","properties":{"choices":[{"label":"A", "ref": "ref1"},{"label":"B", "ref": "ref2"}]}}]}`
 
-	j := `{"workspace":{"href":"https://api.typeform.com/workspaces/workspace"},"title":"form name","fields":[{"type":"multiple_choice","title":"hola\n\n- C. Foosp\n- D. Barsp","ref":"var1","properties":{"choices":[{"label":"C"},{"label":"D"}]}}, {"type":"multiple_choice","title":"Ciao\n\n- C. Fooit\n- D. Barit","ref":"var2","properties":{"choices":[{"label":"C"},{"label":"D"}]}}]}`
+	j := `{"workspace":{"href":"https://api.typeform.com/workspaces/workspace"},"title":"form name","fields":[{"type":"multiple_choice","title":"hola\n\n- C. Foosp\n- D. Barsp","ref":"var1","properties":{"choices":[{"label":"C", "ref":"ref1-good"},{"label":"D", "ref": "ref2-good"}]}}, {"type":"multiple_choice","title":"Ciao\n\n- C. Fooit\n- D. Barit","ref":"var2","properties":{"choices":[{"label":"C"},{"label":"D"}]}}]}`
 
 	f := mockForm(j)
+	ogForm := mockForm(j)
 	ft := mockForm(jt)
 
-	res, err := CopyChoiceRefs(f, ft, true)
+	res, err := CopyChoiceRefs(ft, f, true)
 
 	assert.Nil(t, err)
 
-	// maintains original second field, as no translation exists
-	assert.NotEqual(t, res[0], f.Fields[0])
-	assert.Equal(t, res[1], f.Fields[1])
+	assert.NotEqual(t, res[0].Properties.Choices, ogForm.Fields[0].Properties.Choices)
+
+	// maintains original refs in second field
+	assert.Equal(t, res[1], ogForm.Fields[1])
 }
 
 func TestTranslateForm_WithPerfectOrder(t *testing.T) {

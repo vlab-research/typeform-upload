@@ -393,7 +393,9 @@ func (t *TypeformUploader) CreateForm(conf *FormConf) error {
 	return err
 }
 
+// TODO: test this: (A) updating with fewer fields and (B) updating saves logic
 func (t *TypeformUploader) UpdateForm(conf *FormConf, keepLogic bool) error {
+
 	api := t.Api()
 
 	workspace := getWorkspace(conf.Form.Workspace.Href)
