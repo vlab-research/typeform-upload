@@ -92,6 +92,9 @@ func TranslateForm(src *Form, translated *Form) (*Form, error) {
 	}
 	translated.Fields = formattedTranslated
 
+	// now translate, which is really just copying
+	// the description from source to translated,
+	// note: this mutates translated
 	err = TranslateFields(src, translated)
 	if err != nil {
 		return nil, err

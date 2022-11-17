@@ -37,9 +37,20 @@ Create forms from single sheet
 upload-typeform --workspace "foo" --base "path/to-excel-file.xlsx" --sheet "Baseline"
 ```
 
+
+Update a form that already exists
+``` shell
+upload-typeform --workspace "foo" --base "path/to-excel-file.xlsx" --sheet "Baseline" --update
+```
+
 ### Creating translations
 
-
+Create a new translation from an existing form (NOTE: you give the path to the base excel but the already needed to have created the form in Typeform for this step to work)
 ``` shell
 upload-typeform --workspace "foo" --base "path/to-excel-file.xlsx" --translation "path/to-translation.xlsx"
+```
+
+Update a translation!
+``` shell
+upload-typeform --workspace "foo" --base "path/to-excel-file.xlsx" --translation "path/to-translation.xlsx" --update
 ```
