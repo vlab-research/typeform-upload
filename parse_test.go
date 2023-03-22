@@ -34,6 +34,12 @@ func TestBuildField_GetsThankyouScreen(t *testing.T) {
 	assert.Equal(t, "foo", ty.Title)
 }
 
+func TestBuildField_GetsHiddenVariable(t *testing.T) {
+	i, _ := BuildField([]string{"ref", "hidden", "foo", "", ""})
+	v := i.(HiddenVariable)
+	assert.Equal(t, HiddenVariable("ref"), v)
+}
+
 func TestBuildField_GetsTitleFromMultipleChoiceQuestion(t *testing.T) {
 	i, _ := BuildField([]string{"ref", "multiple_choice", "foo", "A. yes\nB. no", ""})
 	f := i.(*trans.Field)

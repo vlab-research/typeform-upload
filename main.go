@@ -6,10 +6,10 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-
 	"github.com/caarlos0/env/v6"
 	"github.com/dghubble/sling"
 	"github.com/vlab-research/trans"
+
 	"log"
 	"net/http"
 	"os"
@@ -113,6 +113,11 @@ func BuildField(row []string) (interface{}, error) {
 		return f, nil
 	}
 
+	if questionType == "hidden" {
+		f := HiddenVariable(ref)
+		return f, nil
+	}
+
 	f := &trans.Field{
 		Type:  questionType,
 		Title: title,
@@ -128,6 +133,7 @@ func BuildField(row []string) (interface{}, error) {
 func BuildForm(title string, records [][]string) (*Form, error) {
 	fields := []*trans.Field{}
 	thankyouScreens := []*ThankyouScreen{}
+	hiddenVariables := []HiddenVariable{}
 
 	for _, record := range records {
 		f, err := BuildField(record)
@@ -142,11 +148,13 @@ func BuildForm(title string, records [][]string) (*Form, error) {
 			fields = append(fields, f.(*trans.Field))
 		case *ThankyouScreen:
 			thankyouScreens = append(thankyouScreens, f.(*ThankyouScreen))
+		case HiddenVariable:
+			hiddenVariables = append(hiddenVariables, f.(HiddenVariable))
 		}
 
 	}
 
-	return &Form{Title: title, Fields: fields, ThankYouScreens: thankyouScreens}, nil
+	return &Form{Title: title, Fields: fields, ThankYouScreens: thankyouScreens, Hidden: hiddenVariables}, nil
 }
 
 type ErrorDetail struct {
@@ -175,6 +183,8 @@ type ThankyouScreen struct {
 	Title string `json:"title"`
 }
 
+type HiddenVariable string
+
 type CreateFormResponse struct {
 }
 
@@ -190,7 +200,7 @@ type Form struct {
 	Fields          []*trans.Field    `json:"fields"`
 	ThankYouScreens []*ThankyouScreen `json:"thankyou_screens,omitempty"`
 	Logic           json.RawMessage   `json:"logic,omitempty"`
-	Hidden          []string          `json:"hidden,omitempty"`
+	Hidden          []HiddenVariable  `json:"hidden,omitempty"`
 }
 
 type TypeformUploader struct {
@@ -581,6 +591,7 @@ func runDirect(uploader TypeformUploader, workspace, basePath string) {
 
 func main() {
 	workspace := flag.String("workspace", "", "Typeform workspace id")
+
 	basePath := flag.String("base", "", "path to base file")
 	translationPath := flag.String("translation", "", "path to translation file")
 
