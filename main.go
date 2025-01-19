@@ -9,6 +9,7 @@ import (
 	"github.com/caarlos0/env/v6"
 	"github.com/dghubble/sling"
 	"github.com/vlab-research/trans"
+	"github.com/xuri/excelize/v2"
 
 	"log"
 	"net/http"
@@ -89,6 +90,8 @@ func BuildField(row []string) (interface{}, error) {
 		}
 
 		answers, err := trans.ExtractLabels(options)
+
+		println(len(answers))
 
 		if err != nil {
 			return nil, err
@@ -420,7 +423,9 @@ func (t *TypeformUploader) UpdateForm(conf *FormConf, keepLogic bool) error {
 	conf.Form.ID = form.ID
 
 	if keepLogic {
-		conf.Form.Hidden = form.Hidden
+		// Thinking it's better to have all hidden in excel
+		// conf.Form.Hidden = form.Hidden
+
 		conf.Form.Logic = form.Logic
 
 		// Add any refs available in the source
@@ -589,6 +594,39 @@ func runDirect(uploader TypeformUploader, workspace, basePath string) {
 
 }
 
+func runReverse(uploader TypeformUploader, formId, path string) {
+	form, err := uploader.GetForm(formId)
+	handle(err)
+
+	// form.Hidden
+
+	ex := excelize.NewFile()
+	defer func() {
+		if err := ex.Close(); err != nil {
+			fmt.Println(err)
+		}
+	}()
+
+	i := 1
+
+	sheet := "Sheet1"
+
+	for _, f := range form.Fields {
+
+		ex.SetCellValue(sheet, fmt.Sprintf("A%d", i), f.Ref)
+		ex.SetCellValue(sheet, fmt.Sprintf("B%d", i), f.Type)
+		ex.SetCellValue(sheet, fmt.Sprintf("C%d", i), f.Title)
+		// ex.SetCellValue("Sheet1", "B2", 100)
+
+		i++
+	}
+
+	if err := ex.SaveAs(path); err != nil {
+		fmt.Println(err)
+	}
+
+}
+
 func main() {
 	workspace := flag.String("workspace", "", "Typeform workspace id")
 
@@ -601,6 +639,12 @@ func main() {
 
 	direct := flag.Bool("direct", false, "to run direct from a file")
 
+	reverse := flag.Bool("reverse", false, "to download a file from a typeform")
+
+	formId := flag.String("form-id", "", "form id for downloading")
+
+	path := flag.String("path", "", "path for downloading")
+
 	flag.Parse()
 
 	uploader := TypeformUploader{}
@@ -608,6 +652,11 @@ func main() {
 
 	if *direct {
 		runDirect(uploader, *workspace, *basePath)
+		return
+	}
+
+	if *reverse {
+		runReverse(uploader, *formId, *path)
 		return
 	}
 

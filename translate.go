@@ -53,7 +53,7 @@ func CopyChoiceRefs(src *Form, dest *Form, skipErrors bool) ([]*trans.Field, err
 	return fields, nil
 }
 
-func TranslateFields(src *Form, dest *Form) error {
+func CheckFields(src *Form, dest *Form) error {
 	for _, f := range src.Fields {
 		destField, err := findField(f.Ref, dest)
 		if err != nil {
@@ -64,8 +64,6 @@ func TranslateFields(src *Form, dest *Form) error {
 			return fmt.Errorf("Number of choices not the same for field ref: %v. There are %d choices in the source and %d choices in the target", f.Ref, len(f.Properties.Choices), len(destField.Properties.Choices))
 		}
 
-		// copy over description from source to translated
-		destField.Properties.Description = f.Properties.Description
 	}
 
 	return nil
@@ -92,10 +90,9 @@ func TranslateForm(src *Form, translated *Form) (*Form, error) {
 	}
 	translated.Fields = formattedTranslated
 
-	// now translate, which is really just copying
-	// the description from source to translated,
-	// note: this mutates translated
-	err = TranslateFields(src, translated)
+	// Check to make sure fields and choices look the same
+	// in both forms
+	err = CheckFields(src, translated)
 	if err != nil {
 		return nil, err
 	}
