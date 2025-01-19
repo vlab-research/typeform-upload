@@ -91,8 +91,6 @@ func BuildField(row []string) (interface{}, error) {
 
 		answers, err := trans.ExtractLabels(options)
 
-		println(len(answers))
-
 		if err != nil {
 			return nil, err
 		}
